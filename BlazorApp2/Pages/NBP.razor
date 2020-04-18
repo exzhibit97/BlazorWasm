@@ -1,0 +1,67 @@
+﻿@page "/nbp"
+@inject HttpClient httpClient
+
+<h3>NBP</h3>
+@if (rates == null && data == null)
+{
+    <p>Loading...</p>
+}
+else if (data == null)
+{
+    <p>Data is null</p>
+}
+else if (rates == null)
+{
+    <p>Rates are null</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Date</th>
+                <th>Code</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var rate in rates)
+            {
+                <tr>
+                    <td>@rate.No</td>
+                    <td>@rate.EffectiveDate.ToShortDateString()</td>
+                    <td>@rate.Mid</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}
+
+@code {
+    private Rate[] rates;
+    private Data data;
+    int i = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        data = await httpClient.GetJsonAsync<Data>("https://api.nbp.pl/api/exchangerates/rates/a/gbp/last/10");
+        rates = data.Rates;
+    }
+
+    public class Data
+    {
+        public string Table { get; set; }
+        public string Currency { get; set; }
+        public string Code { get; set; }
+        public Rate[] Rates { get; set; }
+    }
+
+    public class Rate
+    {
+        public string No { get; set; }
+        public DateTime EffectiveDate { get; set; }
+        public decimal Mid { get; set; }
+    }
+
+}

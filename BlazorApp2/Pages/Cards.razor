@@ -1,0 +1,46 @@
+﻿@page "/cards"
+@inject HttpClient Http
+
+
+<h3>Cards</h3>
+@if (cards == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+
+    @foreach (var card in cards)
+    {
+<div style="border: 1px solid black;">
+    <p>@card.CardFront</p>
+    <p>@card.CardBack</p>
+    <p>@card.CardDescription</p>
+    <p style="border: 2px dotted blue">@card.Deck</p>
+    <p style="border:1px dashed red">@card.Deck_Id</p>
+    <p>@card.Stage</p>
+</div>
+    }
+}
+
+@code {
+
+    private List<Card> cards;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cards = await Http.GetJsonAsync<List<Card>>("https://localhost:5001/api/cards");
+    }
+
+    public class Card
+    {
+        public int Id { get; set; }
+        public string CardFront { get; set; }
+        public string CardBack { get; set; }
+        public string CardDescription { get; set; }
+        public object Deck { get; set; }
+        public int Deck_Id { get; set; }
+        public int Stage { get; set; }
+    }
+
+}
